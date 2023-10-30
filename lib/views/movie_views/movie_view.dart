@@ -12,11 +12,19 @@ class MovieView extends StatefulWidget {
 
 class _MovieViewState extends State<MovieView> {
   late final MovieViewModel mvm;
+  late TextEditingController controller;
   @override
   void initState() {
     super.initState();
     mvm = context.read<MovieViewModel>();
     mvm.loadMovieData();
+    controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,13 +70,27 @@ class _MovieViewState extends State<MovieView> {
 
             return Text('An Error Occured : ${movieState.error}');
           }
-
           final movies = (movieState as MovieLoaded).movie;
-
+          if (controller.text.isNotEmpty && movies.isNotEmpty) {
+            final title = movies.first.title;
+            final cValue = controller.text;
+            controller.value = TextEditingValue(
+                text: cValue + title.substring(cValue.length),
+                selection: TextSelection(
+                    baseOffset: cValue.length, extentOffset: title.length));
+          }
           return ListView.builder(
-            itemCount: movies.length,
-            itemBuilder: (context, index) {
-              final movie = movies[index];
+            itemCount: movies.length + 1,
+            itemBuilder: (_, index) {
+              if (index == 0) {
+                return TextField(
+                  controller: controller,
+                  onChanged: (value) {
+                    mvm.search(value);
+                  },
+                );
+              }
+              final movie = movies[index - 1];
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -89,7 +111,7 @@ class _MovieViewState extends State<MovieView> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => MovieDetailsScreen(
-                                movieModel: movies[index],
+                                movieModel: movie,
                               ),
                             ),
                           );

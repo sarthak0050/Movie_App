@@ -13,16 +13,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.transparent,
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: const Icon(
-          Icons.arrow_back_ios,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop,
+      appBar: AppBar(),
       backgroundColor: Colors.white,
       body: Column(
         children: <Widget>[
